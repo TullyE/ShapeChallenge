@@ -3,28 +3,26 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.Random;
 import java.util.ArrayList;
-
 /**
-Basic Graphics Program
-NAMES HERE
-06/22/2021
+MyCanvas.java
+Tully, Cassandra
+07/16/2021
 */
-public class MyCanvas extends JPanel implements KeyListener, MouseListener
+public class MyCanvas extends JPanel implements KeyListener, MouseListener, MouseMotionListener
 {
-   // ****************************************************************************************
-   // Notice how the class implements the KeyListener interface
-   // Check your import statements at the top of your code and make sure everything is there!
-   // ****************************************************************************************
-   
+   //Private Vars
+   private String mode = "E";
+   private ArrayList<Tile> myShapes = new ArrayList<Tile>();
+   private int shapeIndexPos = 0;
+   private int offsetX = 0;
+   private int offsetY = 0;
+   private boolean dragging = false;
+
    /**
    Constructor for our MyCanvas class
    Sets up the screen correctly with all the variables
    and properties to consider
    */
-   private String mode = "E";
-   private ArrayList<Tile> myShapes = new ArrayList<Tile>();
-   private int shapeIndexPos = 0;
-
    public MyCanvas()
    {
       setSize(new Dimension(500, 500));
@@ -36,8 +34,13 @@ public class MyCanvas extends JPanel implements KeyListener, MouseListener
       requestFocusInWindow();
       addKeyListener(this);
       addMouseListener(this);
+      addMouseMotionListener(this);
    }
    
+   /**
+    * run when a key is pressed
+    * @param e key pressed
+    */
    public void keyPressed(KeyEvent e)
    {
 
@@ -61,6 +64,10 @@ public class MyCanvas extends JPanel implements KeyListener, MouseListener
       else if (key == KeyEvent.VK_M)
       {
          mode = "M";
+      }
+      else if (key == KeyEvent.VK_C)
+      {
+         mode = "C";
       }
       if (mode.equals("E"))
       {
@@ -90,25 +97,48 @@ public class MyCanvas extends JPanel implements KeyListener, MouseListener
             }
          }
       }
-
+      else if(mode.equals("C"))
+      {
+         if (key == KeyEvent.VK_ENTER)
+         {
+            myShapes.clear();
+            repaint();
+         }
+      }
    }
    
+   /**
+    * run when a key is pressed
+    * @param e key pressed
+    */
    public void keyReleased(KeyEvent e)
    {
    
    }
    
+   /**
+    * run when a key is pressed
+    * @param e key pressed
+    */
    public void keyTyped(KeyEvent e)
    {
       System.out.println(e.getKeyLocation());
    }
    
-   //MOUSE STUFF \/
+   //MOUSE STUFF\\
+   /**
+    * run when a mouse action occurs
+    * @param e mouse action (Clicked, Pressed, Entered, Exited, Released)
+    */
    public void mouseClicked(MouseEvent e)
    {
   
    }
 
+   /**
+    * run when a mouse action occurs
+    * @param e mouse action (Clicked, Pressed, Entered, Exited, Released)
+    */
    public void mousePressed(MouseEvent e)
    {
       int mouseX = e.getX();
@@ -134,6 +164,9 @@ public class MyCanvas extends JPanel implements KeyListener, MouseListener
             {
                System.out.println("Set indexpos");
                shapeIndexPos = i;
+               offsetX = mouseX-myShapes.get(i).getX();
+               offsetY = mouseY-myShapes.get(i).getY();
+               dragging = true;
                break;
             }
          }
@@ -168,27 +201,62 @@ public class MyCanvas extends JPanel implements KeyListener, MouseListener
       }
    }
 
+   /**
+    * run when a mouse action occurs
+    * @param e mouse action (Clicked, Pressed, Entered, Exited, Released)
+    */
    public void mouseReleased(MouseEvent e)
    {
-      if (mode.equals("M"))
-      {
-         myShapes.get(shapeIndexPos).setX(e.getX());
-         myShapes.get(shapeIndexPos).setY(e.getY());
-         repaint();
-      }
+      dragging = false;
    }
 
+   /**
+    * run when a mouse action occurs
+    * @param e mouse action (Clicked, Pressed, Entered, Exited, Released)
+    */
    public void mouseEntered(MouseEvent e)
    {
-      
    }
 
+   /**
+    * run when a mouse action occurs
+    * @param e mouse action (Clicked, Pressed, Entered, Exited, Released)
+    */
    public void mouseExited(MouseEvent e)
    {
       
    }
-   // ***********************************************************************
+   
+   //Mouse Movement Stuff
+   /**
+    * run when a mouse movemnt occurs
+    * @param e mouse action Dragged when clicked then moved
+    */
+   public void mouseDragged(MouseEvent e)
+   {
+      if (dragging)
+      {
+            myShapes.get(shapeIndexPos).setX(e.getX() - offsetX);
+            myShapes.get(shapeIndexPos).setY(e.getY() - offsetY);
+            repaint();
+      }
+   }
+
+   /**
+    * run when a mouse move occurs
+    * @param e mouse action enters the component
+    */
+   public void mouseMoved(MouseEvent e)
+   {      
+
+   }
+   
+   //****************************************************************
   
+   /**
+    * paint component
+    *@param Graphics g representing some paintbrush
+    */
    public void paintComponent(Graphics g)
    {
       // Clear the screen
